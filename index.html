@@ -915,7 +915,7 @@ main { padding-block: 18px 64px; display: flex; flex-direction: column; gap: 14p
     }
     say.textContent = '';
     if (!picked) {
-      say.append('대메뉴 비교(왼쪽 1안 · 가운데 현행 · 오른쪽 2안). 대메뉴를 선택하면 통합 · 이동되는 화면이 사이에 표시됩니다.');
+      say.append('대메뉴 비교(왼쪽 1안 · 가운데 현행 · 오른쪽 2안).', h('br'), '대메뉴를 선택하면 통합 · 이동되는 화면이 사이에 표시됩니다.');
     } else {
       say.append('선택: ', h('b', null, `${LABEL[cmpSel.v]} ${picked.name}`));
       if (cmpSel.v === 'current') say.append(` — 현행 화면 ${picked.set.size}개가 통합되는 1안 · 2안 화면`);
