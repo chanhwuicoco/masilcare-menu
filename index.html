@@ -352,7 +352,7 @@ main { padding-block: 18px 64px; display: flex; flex-direction: column; gap: 14p
   let noteFolded = false;
   let enterTimer = 0, swapTimer = 0, boardTimer = 0;
   let cmpOn = false;
-  let cmpSel = { v: 'current', g: CUR_GROUPS[0].g };
+  let cmpSel = null; // 처음에는 아무 대메뉴도 고르지 않은 상태
 
   const planScreen = () => (view === 'current' ? null : planByCode[view].get(planSel[view]));
   const selGroup = () => (view === 'current' ? byCode.get(selOld).g : planScreen().g);
