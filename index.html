@@ -65,7 +65,8 @@ main { padding-block: 18px 64px; display: flex; flex-direction: column; gap: 14p
 
 /* 대메뉴만 나란히 — 왼쪽 1안 · 가운데 현행 · 오른쪽 2안의 왼쪽 메뉴(대메뉴만). 대메뉴를 누르면 옮겨 가는 화면을 사이에 상자로 뽑아 선으로 잇는다 */
 .cmp { display: flex; flex-direction: column; gap: 12px; }
-.cmp-say { font-size: 15.5px; }
+.cmp-say { font-size: 15.5px; display: flex; flex-direction: column; }
+.cmp-say .ln { display: flex; align-items: center; min-height: 30px; white-space: pre-wrap; }
 .cmp-say b { color: var(--brand-text); }
 .cmp-say button { margin-left: 8px; font-size: 13px; border: 1px solid var(--line); background: var(--surface); border-radius: 6px; padding: 1px 9px; cursor: pointer; }
 .stage.cmp-stage { aspect-ratio: auto; background: #c9d1dd; }
@@ -924,15 +925,19 @@ main { padding-block: 18px 64px; display: flex; flex-direction: column; gap: 14p
         cmpPlan.push({ side, lanes: [{ lane: cmpLane[side].plan, boxes: planBoxes }, { lane: cmpLane[side].cur, boxes: curBoxes }], pairs });
       }
     }
+    // 안내 글은 고르기 전이나 뒤나 늘 두 줄(줄 높이 고정) — 누를 때마다 아래 그림이 위아래로 움직이지 않게
     say.textContent = '';
+    const line1 = h('span', 'ln');
+    const line2 = h('span', 'ln');
     if (!picked) {
-      say.append('대메뉴 비교(왼쪽 1안 · 가운데 현행 · 오른쪽 2안).', h('br'), '대메뉴를 선택하면 통합 · 이동되는 화면이 사이에 표시됩니다.');
+      line1.append('대메뉴 비교(왼쪽 1안 · 가운데 현행 · 오른쪽 2안).');
+      line2.append('대메뉴를 선택하면 통합 · 이동되는 화면이 사이에 표시됩니다.');
     } else {
-      say.append('선택: ', h('b', null, `${LABEL[cmpSel.v]} ${picked.name}`));
-      if (cmpSel.v === 'current') say.append(` — 현행 화면 ${picked.set.size}개가 통합되는 1안 · 2안 화면`);
-      else say.append(` — 개편 화면 ${picked.n}개와 통합 대상 현행 화면 ${picked.set.size}개${picked.fresh ? ` (신규 화면 ${picked.fresh}개는 현행 해당 없음)` : ''}`);
-      say.append(btn(null, '선택 해제'));
+      line1.append('선택: ', h('b', null, `${LABEL[cmpSel.v]} ${picked.name}`), btn(null, '선택 해제'));
+      if (cmpSel.v === 'current') line2.append(`현행 화면 ${picked.set.size}개가 통합되는 1안 · 2안 화면`);
+      else line2.append(`개편 화면 ${picked.n}개와 통합 대상 현행 화면 ${picked.set.size}개${picked.fresh ? ` (신규 화면 ${picked.fresh}개는 현행 해당 없음)` : ''}`);
     }
+    say.append(line1, line2);
     renderInfo(picked);
     layoutCmp(true);
   }
