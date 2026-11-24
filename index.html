@@ -71,7 +71,11 @@ main { padding-block: 18px 64px; display: flex; flex-direction: column; gap: 14p
 .stage.cmp-stage { aspect-ratio: auto; background: #c9d1dd; }
 .cmp-wins { position: relative; display: flex; align-items: stretch; padding: calc(var(--u) * 12); min-height: calc(var(--u) * 620); }
 .cmp-col { position: relative; z-index: 1; flex: none; width: calc(var(--u) * 196); display: flex; flex-direction: column; gap: calc(var(--u) * 5); }
-.cmp-hint { text-align: center; white-space: nowrap; font-size: calc(var(--u) * 12.5); font-weight: 600; line-height: 1.5; color: #2c3a52; }
+.cmp-hint { text-align: center; white-space: nowrap; line-height: 1.4; }
+/* 남색 알약 위에 흰 글씨 — 「1안」 「2안」 낱말만 창 머리의 이름 글자와 같은 색 */
+.cmp-hint span { display: inline-block; background: var(--app-navy); color: #fff; border-radius: 999px; padding: calc(var(--u) * 2.5) calc(var(--u) * 14); font-size: calc(var(--u) * 14.5); font-weight: 700; }
+.cmp-hint b[data-v="plan1"] { color: var(--lbl-plan1); }
+.cmp-hint b[data-v="plan2"] { color: var(--lbl-plan2); }
 .cmp-win { position: relative; flex: 1; overflow: hidden; border-radius: calc(var(--u) * 8); background: var(--app-surface); box-shadow: var(--app-shadow); }
 .cmp-win, .cmp-lane { --win: var(--app-navy); --lbl: #fff; }
 .cmp-win[data-v="plan1"], .cmp-lane[data-v="plan1"] { --lbl: var(--lbl-plan1); }
@@ -765,7 +769,15 @@ main { padding-block: 18px 64px; display: flex; flex-direction: column; gap: 14p
   let cmpPlan = [];
   const NS = 'http://www.w3.org/2000/svg';
   // 창 머리 위에 늘 보이는 문구 — 그 창의 대메뉴를 고르면 무엇과 무엇이 이어지는지
-  const HINT = { plan1: '선택 시 1안/현행 매칭', current: '선택 시 1안/2안 매칭', plan2: '선택 시 현행/2안 매칭' };
+  const HINT = { plan1: ['plan1', 'current'], current: ['plan1', 'plan2'], plan2: ['current', 'plan2'] };
+  function hintEl(v) {
+    const box = h('div', 'cmp-hint');
+    const pill = h('span', null, '선택 시 ');
+    HINT[v].forEach((name, i) => { if (i) pill.append('/'); const b = h('b', null, LABEL[name]); b.dataset.v = name; pill.append(b); });
+    pill.append(' 매칭');
+    box.append(pill);
+    return box;
+  }
   function buildCmp() {
     const grid = $('cmp-grid');
     cmpSvg = document.createElementNS(NS, 'svg');
@@ -791,7 +803,7 @@ main { padding-block: 18px 64px; display: flex; flex-direction: column; gap: 14p
       const win = h('div', 'cmp-win');
       win.dataset.v = col.v;
       const colBox = h('div', 'cmp-col');
-      colBox.append(h('div', 'cmp-hint', HINT[col.v]), win);
+      colBox.append(hintEl(col.v), win);
       const head = h('div', 'cmp-head', LABEL[col.v]);
       head.append(h('span', null, '마실케어 메뉴'));
       const nav = h('nav');
