@@ -72,9 +72,9 @@ main { padding-block: 18px 64px; display: flex; flex-direction: column; gap: 14p
 .stage.cmp-stage { aspect-ratio: auto; background: #c9d1dd; }
 .cmp-wins { position: relative; display: flex; align-items: stretch; padding: calc(var(--u) * 12); min-height: calc(var(--u) * 620); }
 .cmp-col { position: relative; z-index: 1; flex: none; width: calc(var(--u) * 196); display: flex; flex-direction: column; gap: calc(var(--u) * 5); }
-.cmp-hint { text-align: center; white-space: nowrap; line-height: 1.4; }
-/* 남색 알약 위에 흰 글씨 — 「1안」 「2안」 낱말만 창 머리의 이름 글자와 같은 색 */
-.cmp-hint span { display: inline-block; background: var(--app-navy); color: #fff; border-radius: 999px; padding: calc(var(--u) * 2.5) calc(var(--u) * 14); font-size: calc(var(--u) * 14.5); font-weight: 700; }
+.cmp-hint, .cmp-cap { text-align: center; white-space: nowrap; font-size: calc(var(--u) * 14.5); font-weight: 700; line-height: 1.4; }
+/* 남색 알약 위에 흰 글씨 — 「1안」 「2안」 낱말만 창 머리의 이름 글자와 같은 색. 두 가지 알약은 크기가 같아 한 줄로 나란하다 */
+.cmp-hint span, .cmp-cap span { display: inline-block; vertical-align: top; background: var(--app-navy); color: #fff; border-radius: 999px; padding: calc(var(--u) * 2.5) calc(var(--u) * 14); }
 .cmp-hint b[data-v="plan1"] { color: var(--lbl-plan1); }
 .cmp-hint b[data-v="plan2"] { color: var(--lbl-plan2); }
 .cmp-win { position: relative; flex: 1; overflow: hidden; border-radius: calc(var(--u) * 8); background: var(--app-surface); box-shadow: var(--app-shadow); }
@@ -94,8 +94,8 @@ main { padding-block: 18px 64px; display: flex; flex-direction: column; gap: 14p
 /* 사이 칸 — 두 단: 개편안 쪽 단에는 개편 화면, 현행 쪽 단에는 현행 화면 상자(자리는 이어진 대메뉴 줄 높이에 맞춰 스크립트가 정한다) */
 .cmp-link { position: relative; z-index: 1; flex: 1; min-width: 0; display: flex; }
 .cmp-lane { position: relative; flex: 1; min-width: 0; }
-.cmp-cap { position: absolute; top: 0; left: 0; right: 0; text-align: center; font-size: calc(var(--u) * 12.5); font-weight: 700; }
-.cmp-cap span { display: inline-block; background: var(--win); color: var(--lbl); border-radius: 999px; padding: calc(var(--u) * 1) calc(var(--u) * 11); }
+.cmp-cap { position: absolute; top: 0; left: 0; right: 0; }
+.cmp-cap span { color: var(--lbl); }
 .cmp-box { position: absolute; top: 0; left: calc(var(--u) * 16); right: calc(var(--u) * 16); background: var(--app-surface); border: calc(var(--u) * 2) solid var(--win); border-radius: calc(var(--u) * 8); box-shadow: 0 1px 3px rgb(20 30 50 / .18); padding: calc(var(--u) * 6) calc(var(--u) * 8) calc(var(--u) * 7); color: var(--app-ink); font-size: calc(var(--u) * 12.5); line-height: 1.35; animation: rise-in .35s ease both; }
 .cmp-lane:first-child .cmp-box { left: calc(var(--u) * 26); right: calc(var(--u) * 34); }
 .cmp-lane:last-child .cmp-box { left: calc(var(--u) * 34); right: calc(var(--u) * 26); }
@@ -1054,7 +1054,7 @@ main { padding-block: 18px 64px; display: flex; flex-direction: column; gap: 14p
     cmpSvg.classList.toggle('still', !animate);
     const pad = parseFloat(getComputedStyle(grid).paddingTop);
     const gap = pad * 0.7;
-    const head = pad * 1.9;
+    const head = Math.max(pad * 1.9, grid.querySelector('.cmp-win').getBoundingClientRect().top - cmpLane.plan1.plan.getBoundingClientRect().top);
     const lanes = cmpPlan.flatMap((p) => p.lanes);
     for (const side of ['plan1', 'plan2']) for (const kind of ['plan', 'cur']) cmpLane[side][kind].style.minHeight = '';
     // 1) 단마다 상자 높이를 재고, 모자라면 단을 늘린다
