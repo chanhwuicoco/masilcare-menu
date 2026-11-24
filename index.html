@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="color-scheme" content="light dark">
+<meta name="color-scheme" content="light">
 <style>html, body { margin: 0; }</style>
 <title>마실케어 메뉴 개편안</title>
 <style>/* Pretendard - Copyright (c) 2021 Kil Hyung-jin (https://github.com/orioncactus/pretendard), SIL Open Font License 1.1 */
@@ -18,7 +18,8 @@
   --bg: #f1f4f8; --surface: #ffffff; --sunken: #e7ecf3; --ink: #17202f; --muted: #586478; --line: #d6dde8;
   --brand: #1f3a6e; --brand-ink: #ffffff; --brand-text: #1f3a6e;
   --shadow: 0 1px 2px rgb(20 30 50 / .10), 0 10px 28px rgb(20 30 50 / .12);
-  --hit: #e1e9f6;
+  --hit: #e1e9f6; --row-alt: #e8eef7; --line-strong: #aab4c4;
+  color-scheme: light; /* 늘 밝은 테마 */
   /* 「1안」 「2안」 이름 글자 색(남색 바탕 위) — 나머지 색은 모두 같다 */
   --lbl-plan1: #ffd24d; --lbl-plan2: #7fe3c0;
   /* 무대(마실케어 화면을 본뜬 부분)는 화면 사진과 맞추려고 늘 밝은 색이다 */
@@ -29,22 +30,6 @@
   --chip-s: 80%; --chip-l: 94%; --bar-s: 58%; --bar-l: 45%;
   --font: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
   --mono: var(--font); /* 화면 번호도 같은 글꼴(숫자 너비만 고정) */
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0e131c; --surface: #171e2b; --sunken: #111823; --ink: #e6ebf4; --muted: #9aa6ba; --line: #2b3547;
-    --brand: #34589f; --brand-ink: #ffffff; --brand-text: #a9c4f6;
-    --shadow: 0 1px 2px rgb(0 0 0 / .45), 0 12px 30px rgb(0 0 0 / .4);
-    --hit: #223250;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0e131c; --surface: #171e2b; --sunken: #111823; --ink: #e6ebf4; --muted: #9aa6ba; --line: #2b3547;
-  --brand: #34589f; --brand-ink: #ffffff; --brand-text: #a9c4f6;
-  --shadow: 0 1px 2px rgb(0 0 0 / .45), 0 12px 30px rgb(0 0 0 / .4);
-  --hit: #223250;
-  color-scheme: dark;
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
@@ -130,13 +115,17 @@ main { padding-block: 18px 64px; display: flex; flex-direction: column; gap: 14p
 .ci h2 { font-size: 19px; margin-top: 4px; }
 .ci h2 .tag { display: inline-block; margin-right: 8px; font-size: 13px; font-weight: 700; color: var(--brand-ink); background: var(--brand); border-radius: 5px; padding: 1px 8px; vertical-align: 2px; }
 .ci h3 { font-size: 15px; margin-top: 8px; }
-.ci-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); }
+.ci-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line-strong); border-radius: 0; }
 .ci-t { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.5; }
 .ci-t th, .ci-t td { padding: 8px 12px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); text-align: left; vertical-align: top; }
 .ci-t tr > :last-child { border-right: 0; }
 .ci-t tbody tr:last-child > * { border-bottom: 0; }
-.ci-t thead th { background: var(--sunken); font-weight: 600; font-size: 13px; color: var(--muted); white-space: nowrap; }
+.ci-t thead th { background: var(--sunken); font-weight: 700; font-size: 13px; color: var(--ink); white-space: nowrap; border-bottom: 2px solid var(--line-strong); }
 .ci-t tbody th { background: var(--sunken); font-weight: 600; white-space: nowrap; }
+.ci-t tbody tr.alt > td { background: var(--row-alt); }
+/* 여러 줄에 걸친 칸(개편 화면 · 추가 반영 항목)은 줄 색을 따르지 않고, 묶음이 바뀌는 자리에 굵은 줄을 긋는다 */
+.ci-t tbody tr > td.grp { background: var(--surface); }
+.ci-t tbody tr.g-start > * { border-top: 2px solid var(--line-strong); }
 .ci-t.wide { min-width: 860px; }
 .ci-t .code { font-size: 12px; color: var(--brand-text); margin-right: 6px; }
 .ci-t .name { font-weight: 600; }
@@ -945,7 +934,7 @@ main { padding-block: 18px 64px; display: flex; flex-direction: column; gap: 14p
     const body = h('tbody');
     t.append(body);
     wrap.append(t);
-    return { wrap, body };
+    return { wrap, body, stripe: () => { [...body.rows].forEach((tr, i) => tr.classList.toggle('alt', i % 2 === 1)); } };
   }
   const screenLabel = (code, name) => { const f = document.createDocumentFragment(); f.append(h('span', 'code', code), h('span', 'name', name)); return f; };
   const none = (text) => h('span', 'none', text || '—');
@@ -967,7 +956,7 @@ main { padding-block: 18px 64px; display: flex; flex-direction: column; gap: 14p
         const targets = colOf(side).groups.map((g) => ({ g, n: [...picked.set].filter((code) => g.set.has(code)).length })).filter((t) => t.n);
         targets.forEach((t, i) => {
           const tr = h('tr');
-          if (!i) tr.append(cell('th', LABEL[side], null, targets.length));
+          if (!i) { tr.append(cell('th', LABEL[side], null, targets.length)); if (side !== 'plan1') tr.classList.add('g-start'); }
           tr.append(cell('td', h('span', 'name', t.g.name)), cell('td', `${t.n}개`, 'num'), cell('td', WHY[side][t.g.g]));
           a.body.append(tr);
         });
@@ -987,6 +976,8 @@ main { padding-block: 18px 64px; display: flex; flex-direction: column; gap: 14p
         }
         b.body.append(tr);
       }
+      a.stripe();
+      b.stripe();
       box.append(h('h3', null, `개편안별 이동 개요 (화면 ${picked.n}개)`), a.wrap, h('h3', null, '화면별 이동 내역'), b.wrap);
     } else {
       const group = PLAN_GROUPS[v].find((g) => g.g === picked.g);
@@ -1010,19 +1001,22 @@ main { padding-block: 18px 64px; display: flex; flex-direction: column; gap: 14p
         if (x.add.length) { add = h('ul'); for (const item of x.add) add.append(h('li', null, item)); }
         if (!x.from.length) {
           const tr = h('tr');
-          tr.append(cell('td', name), cell('td', none('해당 없음(신규 화면)')), cell('td', none()), cell('td', none()), cell('td', add));
+          tr.append(cell('td', name, 'grp'), cell('td', none('해당 없음(신규 화면)')), cell('td', none()), cell('td', none()), cell('td', add, 'grp'));
+          if (b.body.rows.length) tr.classList.add('g-start');
           b.body.append(tr);
           continue;
         }
         x.from.forEach((f, i) => {
           const c = byCode.get(f);
           const tr = h('tr');
-          if (!i) tr.append(cell('td', name, null, span));
+          if (!i) { tr.append(cell('td', name, 'grp', span)); if (b.body.rows.length) tr.classList.add('g-start'); }
           tr.append(cell('td', screenLabel(c.code, c.name)), cell('td', c.gname, 'sub'), cell('td', c.desc));
-          if (!i) tr.append(cell('td', add, null, span));
+          if (!i) tr.append(cell('td', add, 'grp', span));
           b.body.append(tr);
         });
       }
+      a.stripe();
+      b.stripe();
       box.append(h('h3', null, '구성 개요'), a.wrap, h('h3', null, `화면별 구성 (개편 화면 ${picked.n}개)`), b.wrap);
     }
     box.append(h('p', 'ci-src', '※ 구성 기준은 시트의 화면 구성, 주 사용자, 관련 평가지표를 근거로 정리한 내용입니다. 개편안 원문의 사유 설명은 시트에 포함되어 있지 않습니다.'));
